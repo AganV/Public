@@ -1,91 +1,24 @@
 <!doctype html>
 <html lang="ta">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Birthday Wish — Flipped Name</title>
-  <style>
-    :root{--bg:#0b0b0d;--card:#0f1720;--muted:#9aa5b1}
-    *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#08101a 0%,#071021 100%);font-family:Inter,system-ui,Roboto,Arial;color:#fff}
-    .card{width:420px;max-width:94%;background:rgba(255,255,255,0.03);border-radius:20px;padding:28px;backdrop-filter:blur(6px);box-shadow:0 20px 60px rgba(2,6,23,0.6);position:relative;overflow:hidden}
-
-    /* decorative hero image (uses uploaded file path) */
-    .hero{position:absolute;right:-60px;top:-30px;opacity:0.12;filter:blur(0.6px);width:380px;height:380px;background-image:url('/mnt/data/61034b47-9fee-4692-aedd-ce8dee132159.png');background-size:cover;background-position:center;transform:rotate(-12deg)}
-
-    h1{margin:0 0 8px;font-size:22px;font-weight:600}
-    p.lead{margin:0;color:var(--muted);font-size:13px}
-
-    /* hidden name input area — user can edit value attribute */
-    .hidden-input{display:none}
-
-    .display-area{margin-top:20px;padding:20px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(255,255,255,0.02));text-align:center}
-
-    /* the flipped name style */
-    .flipped-wrapper{display:inline-block;transform-origin:center center}
-    .flipped{display:inline-block;transform:rotate(180deg);font-size:34px;font-weight:700;letter-spacing:0.6px}
-    .subtitle{color:var(--muted);margin-top:8px;font-size:14px}
-
-    .controls{margin-top:16px;display:flex;gap:8px}
-    .btn{flex:1;padding:10px;border-radius:10px;border:0;background:#fff;color:#071029;font-weight:600;cursor:pointer}
-    .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-
-    @media (max-width:480px){.flipped{font-size:26px}.hero{width:260px;height:260px;right:-40px;top:-20px}}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Birthday Flip</title>
+<style>
+  body{margin:0;display:flex;justify-content:center;align-items:center;height:100vh;background:#000;font-family:Inter,system-ui;color:#fff}
+  .box{padding:40px;border-radius:20px;background:#111;width:90%;max-width:360px;text-align:center}
+  .flip{font-size:42px;font-weight:700;transform:rotate(180deg);letter-spacing:1px}
+  .sub{margin-top:10px;color:#aaa;font-size:14px}
+</style>
 </head>
 <body>
-  <div class="card">
-    <div class="hero" aria-hidden></div>
-
-    <h1>Birthday — Stylish Flip</h1>
-    <p class="lead">நீங்கள் HTML-ல இருக்கும் 'name' value-ஐ பயன்படுத்தி, அது website-ல சாதாரணவிட மாறாக "ulta" (upside-down) பாத்திரமாக காட்டபடும்.</p>
-
-    <!-- USER: change the value attribute below to the name you want to embed in the file. It will not display as plain text on the page, only the flipped version will show. -->
-    <input id="nameHidden" class="hidden-input" value="Selva" />
-
-    <div class="display-area">
-      <div class="flipped-wrapper" id="flw">
-        <div class="flipped" id="flippedName">SELVA</div>
-      </div>
-      <div class="subtitle" id="subtitle">இனிய பிறந்த நாள் வாழ்த்துக்கள்</div>
-    </div>
-
-    <div class="controls">
-      <button class="btn" id="regen">Refresh</button>
-      <button class="btn secondary" id="copyBtn">Copy flipped</button>
-    </div>
+  <div class="box">
+    <div id="flipName" class="flip">SELVA</div>
+    <div class="sub">பிறந்த நாள் வாழ்த்துக்கள் ♥</div>
   </div>
-
-  <script>
-    // Read the hidden name input and render a flipped, stylish version.
-    const hidden = document.getElementById('nameHidden');
-    const flipped = document.getElementById('flippedName');
-    const regen = document.getElementById('regen');
-    const copyBtn = document.getElementById('copyBtn');
-
-    function renderFlipped(){
-      // Use value from hidden input
-      const name = (hidden.value || '').trim();
-      if(!name){ flipped.textContent = ''; return; }
-
-      // Option A: simple rotate 180deg (keeps letters intact but upside-down)
-      flipped.textContent = name.toUpperCase();
-
-      // If you prefer: convert characters to upside-down unicode map for a more surprising look
-      // (optional fallback if you prefer inverted glyphs instead of rotation). Not used by default.
-    }
-
-    regen.addEventListener('click', renderFlipped);
-
-    copyBtn.addEventListener('click', ()=>{
-      const txt = flipped.textContent || '';
-      navigator.clipboard?.writeText(txt).then(()=>{
-        copyBtn.textContent = 'Copied!'; setTimeout(()=>copyBtn.textContent='Copy flipped',900);
-      }).catch(()=>{ copyBtn.textContent='Copy failed'; setTimeout(()=>copyBtn.textContent='Copy flipped',900); });
-    });
-
-    // initial render
-    renderFlipped();
-  </script>
+<script>
+  const name = "Selva"; // <-- Only change this
+  document.getElementById("flipName").textContent = name.toUpperCase();
+</script>
 </body>
 </html>
