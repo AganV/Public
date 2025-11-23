@@ -1,461 +1,229 @@
 <!doctype html>
-<html lang="en">
+<html lang="ta">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Attendance — Entry / Exit (Enhanced)</title>
+  <title>Happy Birthday 🎉</title>
   <style>
-    :root{--bg:#071225;--card:#0b1220;--accent:#06b6d4;--muted:#94a3b8}
-    *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071125 0%, #071a2a 100%);color:#e6eef6}
-    .wrap{max-width:1100px;margin:20px auto;padding:16px}
-    .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
-    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    h1{font-size:20px;margin:0}
-    .muted{color:var(--muted);font-size:13px}
-    .grid{display:grid;grid-template-columns:1fr 380px;gap:14px}
-    @media (max-width:920px){.grid{grid-template-columns:1fr}}
-    label{display:block;font-size:13px;margin:8px 0 6px}
-    input,select,button{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
-    button{background:var(--accent);border:0;color:#012;font-weight:700;cursor:pointer}
-    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-    .row{display:flex;gap:8px;align-items:center}
-    .spacer{flex:1}
-    table{width:100%;border-collapse:collapse;margin-top:12px}
-    th,td{padding:8px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.03)}
-    th{font-size:13px;color:var(--muted)}
-    .status-enter{color:#60a5fa;font-weight:700}
-    .status-exit{color:#f97316;font-weight:700}
-    .tiny{font-size:12px;color:var(--muted)}
-    .action-link{background:transparent;border:0;color:var(--muted);cursor:pointer;padding:4px 6px;border-radius:6px}
-    .session-row{background:rgba(255,255,255,0.01);border-radius:8px;padding:8px;margin-bottom:8px}
-    .tag-pill{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:600;margin-left:6px}
+    :root{--bg:#0f172a;--card:#0b1220;--accent:#f59e0b;--muted:#94a3b8}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{background:linear-gradient(180deg,#071029 0%, #071b2a 60%);color:#e6eef8;display:flex;align-items:center;justify-content:center;padding:28px}
+
+    .wrap{width:100%;max-width:980px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:18px;padding:22px;box-shadow:0 10px 40px rgba(2,6,23,0.6);position:relative;overflow:hidden}
+
+    header{display:flex;gap:18px;align-items:center}
+    .logo{width:72px;height:72px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#ef4444);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;color:#071029}
+    h1{margin:0;font-size:22px}
+    p.lead{margin:4px 0 0;color:var(--muted);font-size:13px}
+
+    .row{display:flex;gap:18px;margin-top:18px}
+    .col{flex:1}
+
+    .card{background:rgba(255,255,255,0.02);padding:16px;border-radius:12px}
+
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input[type=text], textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);color:inherit;font-size:14px}
+    textarea{min-height:100px;resize:vertical}
+
+    .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    button{border:0;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#ef4444);color:#071029;font-weight:600;cursor:pointer}
+    button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+    .preview{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:18px;border-radius:12px;background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));min-height:250px}
+    .cake{font-size:46px}
+    .wish{font-size:20px;text-align:center;padding:6px 12px}
+
+    .confetti-canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+
+    footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px;color:var(--muted);font-size:13px}
+
+    /* Floating balloons */
+    .balloon{position:absolute;width:56px;height:80px;border-radius:50% 50% 45% 45%;transform-origin:center bottom;opacity:0.95}
+    .balloon::after{content:'';position:absolute;left:50%;top:75%;width:2px;height:18px;background:rgba(255,255,255,0.15);transform:translateX(-50%)}
+    @keyframes floaty{0%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-20px) rotate(3deg)}100%{transform:translateY(0) rotate(-3deg)}}
+
+    /* Responsive */
+    @media (max-width:760px){.row{flex-direction:column}.logo{width:56px;height:56px}.cake{font-size:36px}}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <header>
-        <div>
-          <h1>Attendance — Entry / Exit</h1>
-          <div class="muted">Multiple entry/exit per day. Tag intervals (Breakfast, Lunch, Work, Other).</div>
+  <div class="wrap" id="app">
+    <canvas class="confetti-canvas" id="confetti"></canvas>
+
+    <header>
+      <div class="logo">HB</div>
+      <div>
+        <h1>Super Birthday Wishes Maker</h1>
+        <p class="lead">ஒரு நபருக்கு தனிப்பயன் வாழ்த்தை உருவாக்கி பகிருங்கள் — fun, fast, and flashy.</p>
+      </div>
+    </header>
+
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <label>பெயர் (Recipient name)</label>
+          <input id="name" type="text" placeholder="உங்கள் நண்பரின் பெயர் எழுது..." value="அன்பு நண்பருக்கு" />
+
+          <label style="margin-top:10px">குறிச்சொல் / வாழ்த்து (Short wish)</label>
+          <input id="shortWish" type="text" placeholder="உதாரணம்: 'பிறந்த நாள் வாழ்த்துகள்!'" value="பிறந்த நாள் வாழ்த்துக்கள்!" />
+
+          <label style="margin-top:10px">நீண்ட வாழ்த்து (Optional)</label>
+          <textarea id="longWish">இன்று உன் நாள் — சந்தோஷமும், வெற்றிகளும் நன்னாள்கள் ஏற்பதாய். மீண்டும் ஒரு சூப்பர் வருடம் நல்வாழ்த்துக்கள்!</textarea>
+
+          <div class="controls">
+            <button id="showBtn">விழிக்கவிட்டு காண் (Show)</button>
+            <button class="secondary" id="confettiBtn">Confetti start/stop</button>
+            <button class="secondary" id="shareBtn">Share (open as new tab)</button>
+            <button class="secondary" id="downloadBtn">Download .html</button>
+          </div>
         </div>
-        <div class="muted" id="currentUserInfo">Not signed in</div>
-      </header>
+      </div>
 
-      <div class="grid">
-        <main>
-          <!-- login -->
-          <div class="card" id="loginCard">
-            <label>Username</label>
-            <input id="username" placeholder="e.g. vegupathi" />
-            <label>Password</label>
-            <input id="password" type="password" placeholder="admin/admin (default)" />
-            <div style="display:flex;margin-top:10px;gap:8px">
-              <button id="loginBtn">Sign in</button>
-              <button id="guestBtn" class="btn-ghost">Guest</button>
-              <div class="spacer"></div>
-              <button id="registerBtn" class="btn-ghost">Register</button>
-            </div>
-            <div class="tiny" style="margin-top:8px">Admin: <strong>admin/admin</strong></div>
-          </div>
-
-          <!-- attendance panel -->
-          <div class="card" id="attendanceCard" hidden style="margin-top:12px">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div>
-                <div class="muted">Signed in as</div>
-                <div id="signedInAs" style="font-weight:700"></div>
-              </div>
-              <div class="tiny" id="clock">--:--:--</div>
-            </div>
-
-            <div style="margin-top:12px" class="row">
-              <label style="margin:0">
-                Tag
-                <select id="eventTag" title="Choose tag">
-                  <option value="Work">Work</option>
-                  <option value="Breakfast">Breakfast</option>
-                  <option value="Lunch">Lunch</option>
-                  <option value="Exit-Other">Exit-Other</option>
-                  <option value="Other">Other</option>
-                </select>
-              </label>
-
-              <button id="markEntry">Record Entry</button>
-              <button id="markExit" class="btn-ghost">Record Exit</button>
-
-              <div style="margin-left:6px">
-                <button id="exportEvents" class="btn-ghost">Export Events CSV</button>
-                <button id="exportSessions" class="btn-ghost">Export Sessions CSV</button>
-              </div>
-
-              <div class="spacer"></div>
-              <input id="searchInput" class="tiny" placeholder="Search name/date/tag" />
-            </div>
-
-            <div style="margin-top:12px" id="todaySummary" class="tiny">Today summary: —</div>
-
-            <div id="eventsList" style="margin-top:12px"></div>
-
-            <div style="margin-top:14px">
-              <div class="muted">Sessions (grouped by date)</div>
-              <div id="sessionsList" style="margin-top:8px"></div>
-            </div>
-
-            <footer id="recordCount" class="muted" style="margin-top:12px">0 events</footer>
-          </div>
-        </main>
-
-        <aside>
-          <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div><div class="muted">Users</div><div style="font-weight:700">Manage</div></div>
-              <div class="muted" id="usersCount">0</div>
-            </div>
-
-            <div id="usersList" class="users-list" style="max-height:220px;overflow:auto;margin-top:10px"></div>
-
-            <div style="margin-top:10px">
-              <label>New user</label>
-              <input id="newUserName" placeholder="name" />
-              <label>Password (optional)</label>
-              <input id="newUserPass" placeholder="password" />
-              <div style="display:flex;gap:8px;margin-top:8px">
-                <button id="addUserBtn">Add</button>
-                <button id="resetBtn" class="btn-ghost">Reset Demo</button>
-              </div>
-            </div>
-          </div>
-        </aside>
+      <div class="col">
+        <div class="card preview" id="preview">
+          <div class="cake" aria-hidden>🎂</div>
+          <div class="wish" id="previewShort">பிறந்த நாள் வாழ்த்துக்கள்!</div>
+          <div id="previewName" style="font-weight:700;font-size:18px">அன்பு நண்பருக்கு</div>
+          <div id="previewLong" style="color:var(--muted);max-width:70%;text-align:center">இன்று உன் நாள் — சந்தோஷமும், வெற்றிகளும் நன்னாள்கள் ஏற்பதாய். மீண்டும் ஒரு சூப்பர் வருடம் நல்வாழ்த்துக்கள்!</div>
+        </div>
       </div>
     </div>
+
+    <footer>
+      <div>Made with ❤️ — share the joy</div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <small class="muted">Tip:</small>
+        <small class="muted">Use "Share" to open a standalone page you can send.</small>
+      </div>
+    </footer>
+
+    <!-- decorative balloons -->
+    <div class="balloon" style="left:4%;top:30%;background:linear-gradient(180deg,#ff7a7a,#ffb6c1);animation:floaty 6s ease-in-out infinite"></div>
+    <div class="balloon" style="left:18%;top:10%;background:linear-gradient(180deg,#ffd36b,#ff8a00);width:46px;height:68px;animation:floaty 5.4s ease-in-out infinite"></div>
+    <div class="balloon" style="right:8%;top:20%;background:linear-gradient(180deg,#8be7ff,#3bb4ff);transform:scale(0.95);animation:floaty 6.6s ease-in-out infinite"></div>
   </div>
 
-<script>
-/* Storage keys (v3) */
-const LS_USERS = 'att_v3_users';
-const LS_EVENTS = 'att_v3_events'; // events = {id, tsISO, name, type:'entry'|'exit', tag}
-const LS_CURUSER = 'att_v3_current_user';
+  <script>
+    // DOM
+    const nameInput = document.getElementById('name');
+    const shortInput = document.getElementById('shortWish');
+    const longInput = document.getElementById('longWish');
+    const showBtn = document.getElementById('showBtn');
+    const confettiBtn = document.getElementById('confettiBtn');
+    const shareBtn = document.getElementById('shareBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
 
-/* helpers */
-const el = id => document.getElementById(id);
-const now = () => new Date();
-const pad = n => String(n).padStart(2,'0');
-const fmtTS = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-const dateOnly = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-const durToStr = secs => {
-  secs = Math.max(0, Math.round(secs));
-  const h = Math.floor(secs/3600); secs%=3600;
-  const m = Math.floor(secs/60); const s = secs%60;
-  return `${h}h ${m}m ${s}s`;
-};
-function readJSON(key, fallback){ try{ const v=localStorage.getItem(key); return v?JSON.parse(v):fallback }catch(e){return fallback} }
-function writeJSON(key,val){ localStorage.setItem(key, JSON.stringify(val)) }
+    const previewShort = document.getElementById('previewShort');
+    const previewName = document.getElementById('previewName');
+    const previewLong = document.getElementById('previewLong');
 
-/* defaults */
-function ensureDefaults(){
-  if(!readJSON(LS_USERS,null)){
-    writeJSON(LS_USERS, [{id:1, name:'admin', pass:'admin', role:'admin'},{id:2, name:'alice', pass:'', role:'user'}]);
-  }
-  if(!readJSON(LS_EVENTS,null)) writeJSON(LS_EVENTS, []);
-}
-
-/* users UI */
-function renderUsers(){
-  const users = readJSON(LS_USERS,[]);
-  el('usersCount').textContent = users.length;
-  const list = el('usersList'); list.innerHTML='';
-  users.forEach(u=>{
-    const div = document.createElement('div');
-    div.style.display='flex'; div.style.justifyContent='space-between'; div.style.padding='6px'; div.style.borderBottom='1px solid rgba(255,255,255,0.02)';
-    div.innerHTML = `<div>${u.name}${u.role==='admin'?' ★':''}</div>
-      <div>
-        <button data-id="${u.id}" class="selectBtn action-link">Sign</button>
-        <button data-id="${u.id}" class="delBtn action-link">Del</button>
-      </div>`;
-    list.appendChild(div);
-  });
-  list.querySelectorAll('.delBtn').forEach(b=>b.addEventListener('click',e=>{
-    const id=Number(e.target.dataset.id); if(!confirm('Delete user?')) return;
-    const users = readJSON(LS_USERS,[]).filter(x=>x.id!==id); writeJSON(LS_USERS, users); renderUsers();
-  }));
-  list.querySelectorAll('.selectBtn').forEach(b=>b.addEventListener('click',e=>{
-    const id=Number(e.target.dataset.id); const users=readJSON(LS_USERS,[]); const u=users.find(x=>x.id===id);
-    if(u){ writeJSON(LS_CURUSER,u); location.reload(); }
-  }));
-}
-
-/* events CRUD */
-function addEvent(name, type, tag='Other'){
-  const evs = readJSON(LS_EVENTS,[]);
-  const id = Date.now() + Math.floor(Math.random()*1000);
-  evs.push({id, tsISO: new Date().toISOString(), name, type, tag});
-  writeJSON(LS_EVENTS, evs);
-}
-function deleteEvent(id){ const evs = readJSON(LS_EVENTS,[]).filter(e=>e.id!==id); writeJSON(LS_EVENTS, evs); }
-function editEventNote(id, newTag){ const evs=readJSON(LS_EVENTS,[]); const r=evs.find(e=>e.id===id); if(r){ r.tag=newTag; writeJSON(LS_EVENTS, evs); } }
-
-/* pairing events into sessions per day per user
-   For each user+date, sort events by ts asc. Pair entry -> next exit (after it). If exit appears before entry, we still record exit-only as zero-length session (or skip). If unmatched entry, session end = now (ongoing).
-*/
-function sessionsFromEvents(events){
-  // events: array of {id, tsISO, name, type, tag}
-  const byKey = {};
-  events.slice().sort((a,b)=> new Date(a.tsISO) - new Date(b.tsISO)).forEach(e=>{
-    const key = `${e.name}::${dateOnly(new Date(e.tsISO))}`;
-    if(!byKey[key]) byKey[key]=[];
-    byKey[key].push(e);
-  });
-  const sessions = []; // {name,date,startISO,endISO,durationSec,tags:[...],entryId,exitId}
-  for(const key in byKey){
-    const parts = key.split('::'); const name=parts[0]; const date=parts[1];
-    const list = byKey[key];
-    let i=0;
-    while(i<list.length){
-      const ev = list[i];
-      if(ev.type==='entry'){
-        // find next exit
-        let exit = list.slice(i+1).find(x=>x.type==='exit');
-        if(exit){
-          const start = new Date(ev.tsISO), end = new Date(exit.tsISO);
-          const dur = Math.max(0,(end - start)/1000);
-          sessions.push({name,date,startISO:ev.tsISO,endISO:exit.tsISO,durationSec:dur,tags:[ev.tag,exit.tag].filter(Boolean), entryId:ev.id, exitId:exit.id});
-          // remove that exit from consideration by advancing pointer to index of exit+1
-          const exitIndex = list.indexOf(exit);
-          i = exitIndex + 1;
-        } else {
-          // unmatched entry -> ongoing session till now
-          const start = new Date(ev.tsISO), end = new Date();
-          const dur = Math.max(0,(end - start)/1000);
-          sessions.push({name,date,startISO:ev.tsISO,endISO:null,durationSec:dur,tags:[ev.tag], entryId:ev.id, exitId:null});
-          i++;
-        }
-      } else if(ev.type==='exit'){
-        // exit without prior entry: add a short session or a record with null start
-        // We'll treat as zero-length session at exit time (user had left without recorded entry)
-        sessions.push({name,date,startISO:null,endISO:ev.tsISO,durationSec:0,tags:[ev.tag], entryId:null, exitId:ev.id});
-        i++;
-      } else i++;
+    // show preview
+    function updatePreview(){
+      previewShort.textContent = shortInput.value || 'பிறந்த நாள் வாழ்த்துக்கள்!';
+      previewName.textContent = nameInput.value || 'அன்பு நண்பருக்கு';
+      previewLong.textContent = longInput.value || '';
     }
-  }
-  return sessions.sort((a,b)=> (a.date > b.date ? -1:1));
-}
 
-/* render UI */
-function renderEvents(filter=''){
-  const evs = readJSON(LS_EVENTS,[]).slice().reverse();
-  const f = filter.trim().toLowerCase();
-  const listWrap = el('eventsList'); listWrap.innerHTML = '';
-  const shown = evs.filter(e=>{
-    if(!f) return true;
-    return [e.name, e.tag, e.tsISO].some(s=>String(s).toLowerCase().includes(f));
-  });
-  shown.forEach(e=>{
-    const d = new Date(e.tsISO);
-    const tr = document.createElement('div'); tr.style.display='flex'; tr.style.justifyContent='space-between'; tr.style.padding='6px'; tr.style.borderBottom='1px solid rgba(255,255,255,0.02)';
-    tr.innerHTML = `<div>
-        <div style="font-weight:700">${e.name} <span class="tag-pill">${e.tag}</span></div>
-        <div class="tiny">${fmtTS(d)} — <span class="${e.type==='entry'?'status-enter':'status-exit'}">${e.type.toUpperCase()}</span></div>
-      </div>
-      <div style="text-align:right">
-        <button data-id="${e.id}" class="editEv action-link">Tag</button>
-        <button data-id="${e.id}" class="delEv action-link">Del</button>
-      </div>`;
-    listWrap.appendChild(tr);
-  });
-  el('recordCount').textContent = `${shown.length} events (total ${evs.length})`;
-  attachEventBtns();
-}
-
-function renderSessions(filter=''){
-  const evs = readJSON(LS_EVENTS,[]);
-  const sessions = sessionsFromEvents(evs);
-  const f = filter.trim().toLowerCase();
-  const wrap = el('sessionsList'); wrap.innerHTML = '';
-  const grouped = {};
-  sessions.forEach(s=>{
-    if(f){
-      if(![s.name, s.date, s.tags.join(' ')].some(x=>String(x).toLowerCase().includes(f))) return;
-    }
-    if(!grouped[s.date]) grouped[s.date]=[];
-    grouped[s.date].push(s);
-  });
-  const dates = Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
-  dates.forEach(date=>{
-    const block = document.createElement('div'); block.className='session-block';
-    block.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <div style="font-weight:700">${date}</div>
-      <div class="tiny">Sessions: ${grouped[date].length}</div>
-    </div>`;
-    grouped[date].forEach(s=>{
-      const div = document.createElement('div'); div.className='session-row';
-      const startStr = s.startISO ? fmtTS(new Date(s.startISO)) : '—';
-      const endStr = s.endISO ? fmtTS(new Date(s.endISO)) : (s.endISO===null ? 'ongoing' : '—');
-      div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div><strong>${s.name}</strong> <span class="tiny">${s.tags.join(', ')}</span></div>
-          <div class="tiny">${startStr} → ${endStr}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-weight:700">${durToStr(s.durationSec)}</div>
-          <div class="tiny" style="margin-top:6px">
-            <button data-entry="${s.entryId||''}" data-exit="${s.exitId||''}" class="delSession action-link">Del</button>
-          </div>
-        </div>
-      </div>`;
-      block.appendChild(div);
+    showBtn.addEventListener('click', ()=>{
+      updatePreview();
+      startConfetti(160);
+      playToneSequence();
     });
-    wrap.appendChild(block);
-  });
 
-  // today summary: sum durations for today
-  const today = dateOnly(new Date());
-  const todaySessions = sessions.filter(s=>s.date===today);
-  const totalSec = todaySessions.reduce((sum,s)=>sum + (s.durationSec||0),0);
-  el('todaySummary').textContent = `Today (${today}) total: ${durToStr(totalSec)} — sessions: ${todaySessions.length}`;
-  attachSessionBtns();
-}
+    // Simple confetti canvas
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    let W=0,H=0; function resize(){W=canvas.width=canvas.clientWidth;H=canvas.height=canvas.clientHeight}
+    window.addEventListener('resize', resize); resize();
 
-/* attach handlers for dynamic buttons */
-function attachEventBtns(){
-  document.querySelectorAll('.delEv').forEach(b=>b.addEventListener('click',e=>{
-    const id=Number(e.target.dataset.id); if(!confirm('Delete event?')) return;
-    deleteEvent(id); renderEvents(el('searchInput').value); renderSessions(el('searchInput').value);
-  }));
-  document.querySelectorAll('.editEv').forEach(b=>b.addEventListener('click',e=>{
-    const id=Number(e.target.dataset.id); const evs=readJSON(LS_EVENTS,[]); const ev=evs.find(x=>x.id===id);
-    if(!ev) return alert('Not found');
-    const newTag = prompt('Edit tag:', ev.tag || '');
-    if(newTag===null) return;
-    ev.tag = newTag.trim() || 'Other'; writeJSON(LS_EVENTS, evs); renderEvents(el('searchInput').value); renderSessions(el('searchInput').value);
-  }));
-}
+    let particles=[],running=false;
+    function rand(min,max){return Math.random()*(max-min)+min}
 
-function attachSessionBtns(){
-  document.querySelectorAll('.delSession').forEach(b=>b.addEventListener('click',e=>{
-    const entryId = e.target.dataset.entry ? Number(e.target.dataset.entry) : null;
-    const exitId = e.target.dataset.exit ? Number(e.target.dataset.exit) : null;
-    if(!confirm('Delete session events (will delete associated entry/exit events)?')) return;
-    let evs = readJSON(LS_EVENTS,[]);
-    evs = evs.filter(x=> x.id !== entryId && x.id !== exitId);
-    writeJSON(LS_EVENTS, evs); renderEvents(el('searchInput').value); renderSessions(el('searchInput').value);
-  }));
-}
-
-/* export functions */
-function exportEventsCSV(filter=''){
-  const evs = readJSON(LS_EVENTS,[]).slice().sort((a,b)=> new Date(a.tsISO)-new Date(b.tsISO));
-  const f = filter.trim().toLowerCase();
-  const rows = evs.filter(e=>{
-    if(!f) return true;
-    return [e.name,e.tag,e.tsISO,e.type].some(x=>String(x).toLowerCase().includes(f));
-  });
-  if(!rows.length) return alert('No events to export');
-  const header = ['Timestamp','Name','Type','Tag'];
-  const lines = [header.join(',')].concat(rows.map(r=>`"${r.tsISO}","${r.name}","${r.type}","${(r.tag||'').replace(/"/g,'""')}"`));
-  downloadCSV(lines.join('\n'),'attendance_events.csv');
-}
-function exportSessionsCSV(filter=''){
-  const evs = readJSON(LS_EVENTS,[]);
-  const sessions = sessionsFromEvents(evs).slice().reverse(); // chronological
-  const f = filter.trim().toLowerCase();
-  const rows = sessions.filter(s=> {
-    if(!f) return true;
-    return [s.name,s.date,s.tags.join(' ')].some(x=>String(x).toLowerCase().includes(f));
-  });
-  if(!rows.length) return alert('No sessions to export');
-  const header = ['Date','Name','Start','End','DurationSec','DurationHuman','Tags'];
-  const lines = [header.join(',')].concat(rows.map(s=>{
-    const start = s.startISO||''; const end = s.endISO||''; const dh = durToStr(s.durationSec||0);
-    return `"${s.date}","${s.name}","${start}","${end}","${Math.round(s.durationSec||0)}","${dh}","${s.tags.join(';')}"`;
-  }));
-  downloadCSV(lines.join('\n'),'attendance_sessions.csv');
-}
-function downloadCSV(text, filename){
-  const blob = new Blob([text], {type:'text/csv'}); const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-}
-
-/* main init */
-document.addEventListener('DOMContentLoaded', ()=>{
-  ensureDefaults(); renderUsers();
-
-  const cur = readJSON(LS_CURUSER, null);
-  if(cur){
-    el('loginCard').hidden=true; el('attendanceCard').hidden=false;
-    el('signedInAs').textContent = cur.name + (cur.role==='admin'?' (admin)':'');
-    el('currentUserInfo').textContent = `Signed in: ${cur.name} (click to sign out)`;
-  } else {
-    el('loginCard').hidden=false; el('attendanceCard').hidden=true;
-  }
-
-  // clock
-  setInterval(()=> el('clock').textContent = new Date().toLocaleTimeString(), 1000);
-
-  // render initial
-  renderEvents(); renderSessions();
-
-  // login handlers
-  el('loginBtn').addEventListener('click', ()=>{
-    const u = el('username').value.trim(); const p = el('password').value;
-    if(!u) return alert('Enter username');
-    const users = readJSON(LS_USERS,[]);
-    const found = users.find(x=>x.name.toLowerCase()===u.toLowerCase() && (x.pass||'')=== (p||''));
-    if(found){ writeJSON(LS_CURUSER, found); location.reload(); } else alert('Invalid credentials');
-  });
-  el('guestBtn').addEventListener('click', ()=>{
-    const name = prompt('Enter your name (quick sign):'); if(!name) return;
-    let users = readJSON(LS_USERS,[]); let usr = users.find(x=>x.name.toLowerCase()===name.toLowerCase());
-    if(!usr){ usr = {id:(users.reduce((s,x)=>Math.max(s,x.id),0)||0)+1, name, pass:'', role:'user'}; users.push(usr); writeJSON(LS_USERS, users); renderUsers(); }
-    writeJSON(LS_CURUSER, usr); location.reload();
-  });
-  el('registerBtn').addEventListener('click', ()=>{
-    const name = el('newUserName').value.trim(); const pass = el('newUserPass').value;
-    if(!name) return alert('Enter name');
-    let users = readJSON(LS_USERS,[]);
-    if(users.some(x=>x.name.toLowerCase()===name.toLowerCase())) return alert('Name exists');
-    users.push({id:(users.reduce((s,x)=>Math.max(s,x.id),0)||0)+1, name, pass:pass||'', role:'user'});
-    writeJSON(LS_USERS, users); el('newUserName').value=''; el('newUserPass').value=''; renderUsers(); alert('User added');
-  });
-
-  el('addUserBtn').addEventListener('click', ()=> el('registerBtn').click());
-
-  el('resetBtn').addEventListener('click', ()=>{ if(confirm('Reset demo data (users,events)?')){ localStorage.removeItem(LS_USERS); localStorage.removeItem(LS_EVENTS); localStorage.removeItem(LS_CURUSER); location.reload(); } });
-
-  // sign out
-  el('currentUserInfo').addEventListener('click', ()=> {
-    if(readJSON(LS_CURUSER,null)){
-      if(confirm('Sign out?')){ localStorage.removeItem(LS_CURUSER); location.reload(); }
+    function startConfetti(count=120){
+      particles = [];
+      for(let i=0;i<count;i++){
+        particles.push({x:rand(0,W),y:rand(-H,0),vx:rand(-1.5,1.5),vy:rand(1,4),size:rand(6,12),angle:rand(0,360),spin:rand(-0.2,0.4),color:randomColor()});
+      }
+      if(!running){running=true;requestAnimationFrame(loop)}
     }
-  });
+    function stopConfetti(){running=false}
 
-  // mark entry / exit
-  el('markEntry').addEventListener('click', ()=>{
-    const cur = readJSON(LS_CURUSER, null); if(!cur) return alert('Sign in first');
-    const tag = el('eventTag').value || 'Work';
-    addEvent(cur.name, 'entry', tag); renderEvents(el('searchInput').value); renderSessions(el('searchInput').value);
-  });
-  el('markExit').addEventListener('click', ()=>{
-    const cur = readJSON(LS_CURUSER, null); if(!cur) return alert('Sign in first');
-    const tag = el('eventTag').value || 'Exit';
-    addEvent(cur.name, 'exit', tag); renderEvents(el('searchInput').value); renderSessions(el('searchInput').value);
-  });
+    function loop(){
+      ctx.clearRect(0,0,W,H);
+      for(let p of particles){
+        p.x+=p.vx; p.y+=p.vy; p.vy+=0.02; p.angle+=p.spin;
+        if(p.y>H+20){p.y=rand(-100, -10); p.x=rand(0,W); p.vy=rand(1,3)}
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.angle);
+        ctx.fillStyle=p.color; ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6);
+        ctx.restore();
+      }
+      if(running) requestAnimationFrame(loop);
+    }
 
-  // search / export
-  el('searchInput').addEventListener('input', e=>{ renderEvents(e.target.value); renderSessions(e.target.value); });
-  el('exportEvents').addEventListener('click', ()=> exportEventsCSV(el('searchInput').value));
-  el('exportSessions').addEventListener('click', ()=> exportSessionsCSV(el('searchInput').value));
+    function randomColor(){
+      const palette=['#ff5c8a','#ffd36b','#8be7ff','#7af29a','#ff8a00','#c084fc'];
+      return palette[Math.floor(Math.random()*palette.length)];
+    }
 
-  // keyboard shortcuts P/E for entry/exit
-  document.addEventListener('keydown', (e)=>{
-    if(!readJSON(LS_CURUSER,null)) return;
-    if(e.key.toLowerCase()==='e') el('markEntry').click();
-    if(e.key.toLowerCase()==='x') el('markExit').click();
-  });
+    confettiBtn.addEventListener('click', ()=>{
+      running? stopConfetti() : startConfetti(140);
+      confettiBtn.textContent = running? 'Confetti stop' : 'Confetti start';
+    });
 
-}); // DOMContentLoaded
-</script>
+    // small melody using WebAudio API
+    function playToneSequence(){
+      try{
+        const ctx = new (window.AudioContext||window.webkitAudioContext)();
+        const now = ctx.currentTime; const notes=[523.25,659.25,783.99,1046.5];
+        notes.forEach((f,i)=>{
+          const o=ctx.createOscillator(); const g=ctx.createGain();
+          o.type='sine'; o.frequency.value=f; g.gain.value=0.02;
+          o.connect(g); g.connect(ctx.destination);
+          o.start(now + i*0.13); o.stop(now + i*0.13 + 0.12);
+        });
+      }catch(e){console.warn('audio blocked',e)}
+    }
+
+    // Share: create a data URL with a small standalone HTML prefilled with user's text
+    shareBtn.addEventListener('click', ()=>{
+      updatePreview();
+      const name = escapeHtml(nameInput.value||'Friend');
+      const short = escapeHtml(shortInput.value||'Happy Birthday!');
+      const long = escapeHtml(longInput.value||'Wishing you all the best.');
+
+      const page = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${name} — Happy Birthday</title>
+      <style>body{font-family:system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#071029,#071b2a);color:#e6eef8;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+      .card{padding:30px;border-radius:12px;background:rgba(255,255,255,0.03);text-align:center;max-width:680px}
+      .cake{font-size:60px}</style></head><body>
+      <div class="card"><div class="cake">🎉🎂</div><h1>${short}</h1><h2>${name}</h2><p style="color:#9fb0c6">${long}</p></div>
+      <script>window.onload=function(){document.body.addEventListener('click',()=>{window.close&&window.close()})}</script></body></html>`;
+
+      const blob = new Blob([page],{type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    });
+
+    // Download as file
+    downloadBtn.addEventListener('click', ()=>{
+      updatePreview();
+      const content = document.documentElement.outerHTML;
+      const blob = new Blob([content],{type:'text/html'});
+      const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
+      a.download = (nameInput.value||'birthday') + '.html'; document.body.appendChild(a); a.click(); a.remove();
+    });
+
+    // escape helper
+    function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+    // live update when typing
+    [nameInput,shortInput,longInput].forEach(el=>el.addEventListener('input', updatePreview));
+
+    // initialize
+    updatePreview();
+
+    // make canvas cover the container size after fonts rendered
+    setTimeout(()=>{resize();},350);
+  </script>
 </body>
 </html>
