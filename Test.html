@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Attendance — Entry / Exit (Enhanced)</title>
+  <style>
+    :root{--bg:#071225;--card:#0b1220;--accent:#06b6d4;--muted:#94a3b8}
+    *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071125 0%, #071a2a 100%);color:#e6eef6}
+    .wrap{max-width:1100px;margin:20px auto;padding:16px}
+    .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    h1{font-size:20px;margin:0}
+    .muted{color:var(--muted);font-size:13px}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:14px}
+    @media (max-width:920px){.grid{grid-template-columns:1fr}}
+    label{display:block;font-size:13px;margin:8px 0 6px}
+    input,select,button{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    button{background:var(--accent);border:0;color:#012;font-weight:700;cursor:pointer}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .row{display:flex;gap:8px;align-items:center}
+    .spacer{flex:1}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{padding:8px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.03)}
+    th{font-size:13px;color:var(--muted)}
+    .status-enter{color:#60a5fa;font-weight:700}
+    .status-exit{color:#f97316;font-weight:700}
+    .tiny{font-size:12px;color:var(--muted)}
+    .action-link{background:transparent;border:0;color:var(--muted);cursor:pointer;padding:4px 6px;border-radius:6px}
+    .session-row{background:rgba(255,255,255,0.01);border-radius:8px;padding:8px;margin-bottom:8px}
+    .tag-pill{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:600;margin-left:6px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <header>
+        <div>
+          <h1>Attendance — Entry / Exit</h1>
+          <div class="muted">Multiple entry/exit per day. Tag intervals (Breakfast, Lunch, Work, Other).</div>
+        </div>
+        <div class="muted" id="currentUserInfo">Not signed in</div>
+      </header>
+
+      <div class="grid">
+        <main>
+          <!-- login -->
+          <div class="card" id="loginCard">
+            <label>Username</label>
+            <input id="username" placeholder="e.g. vegupathi" />
+            <label>Password</label>
+            <input id="password" type="password" placeholder="admin/admin (default)" />
+            <div style="display:flex;margin-top:10px;gap:8px">
+              <button id="loginBtn">Sign in</button>
+              <button id="guestBtn" class="btn-ghost">Guest</button>
+              <div class="spacer"></div>
+              <button id="registerBtn" class="btn-ghost">Register</button>
+            </div>
+            <div class="tiny" style="margin-top:8px">Admin: <strong>admin/admin</strong></div>
+          </div>
+
+          <!-- attendance panel -->
+          <div class="card" id="attendanceCard" hidden style="margin-top:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div class="muted">Signed in as</div>
+                <div id="signedInAs" style="font-weight:700"></div>
+              </div>
+              <div class="tiny" id="clock">--:--:--</div>
+            </div>
+
+            <div style="margin-top:12px" class="row">
+              <label style="margin:0">
+                Tag
+                <select id="eventTag" title="Choose tag">
+                  <option value="Work">Work</option>
+                  <option value="Breakfast">Breakfast</option>
+                  <option value="Lunch">Lunch</option>
+                  <option value="Exit-Other">Exit-Other</option>
+                  <option value="Other">Other</option>
+                </select>
+              </label>
+
+              <button id="markEntry">Record Entry</button>
+              <button id="markExit" class="btn-ghost">Record Exit</button>
+
+              <div style="margin-left:6px">
+                <button id="exportEvents" class="btn-ghost">Export Events CSV</button>
+                <button id="exportSessions" class="btn-ghost">Export Sessions CSV</button>
+              </div>
+
+              <div class="spacer"></div>
+              <input id="searchInput" class="tiny" placeholder="Search name/date/tag" />
+            </div>
+
+            <div style="margin-top:12px" id="todaySummary" class="tiny">Today summary: —</div>
+
+            <div id="eventsList" style="margin-top:12px"></div>
+
+            <div style="margin-top:14px">
+              <div class="muted">Sessions (grouped by date)</div>
+              <div id="sessionsList" style="margin-top:8px"></div>
+            </div>
+
+            <footer id="recordCount" class="muted" style="margin-top:12px">0 events</footer>
+          </div>
+        </main>
+
+        <aside>
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><div class="muted">Users</div><div style="font-weight:700">Manage</div></div>
+              <div class="muted" id="usersCount">0</div>
+            </div>
+
+            <div id="usersList" class="users-list" style="max-height:220px;overflow:auto;margin-top:10px"></div>
+
+            <div style="margin-top:10px">
+              <label>New user</label>
+              <input id="newUserName" placeholder="name" />
+              <label>Password (optional)</label>
+              <input id="newUserPass" placeholder="password" />
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button id="addUserBtn">Add</button>
+                <button id="resetBtn" class="btn-ghost">Reset Demo</button>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* Storage keys (v3) */
+const LS_USERS = 'att_v3_users';
+const LS_EVENTS = 'att_v3_events'; // events = {id, tsISO, name, type:'entry'|'exit', tag}
+const LS_CURUSER = 'att_v3_current_user';
+
+/* helpers */
+const el = id => document.getElementById(id);
+const now = () => new Date();
+const pad = n => String(n).padStart(2,'0');
+const fmtTS = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+const dateOnly = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const durToStr = secs => {
+  secs = Math.max(0, Math.round(secs));
+  const h = Math.floor(secs/3600); secs%=3600;
+  const m = Math.floor(secs/60); const s = secs%60;
+  return `${h}h ${m}m ${s}s`;
+};
+function readJSON(key, fallback){ try{ const v=localStorage.getItem(key); return v?JSON.parse(v):fallback }catch(e){return fallback} }
+function writeJSON(key,val){ localStorage.setItem(key, JSON.stringify(val)) }
+
+/* defaults */
+function ensureDefaults(){
+  if(!readJSON(LS_USERS,null)){
+    writeJSON(LS_USERS, [{id:1, name:'admin', pass:'admin', role:'admin'},{id:2, name:'alice', pass:'', role:'user'}]);
+  }
+  if(!readJSON(LS_EVENTS,null)) writeJSON(LS_EVENTS, []);
+}
+
+/* users UI */
+function renderUsers(){
+  const users = readJSON(LS_USERS,[]);
+  el('usersCount').textContent = users.length;
+  const list = el('usersList'); list.innerHTML='';
+  users.forEach(u=>{
+    const div = document.createElement('div');
+    div.style.display='flex'; div.style.justifyContent='space-between'; div.style.padding='6px'; div.style.borderBottom='1px solid rgba(255,255,255,0.02)';
+    div.innerHTML = `<div>${u.name}${u.role==='admin'?' ★':''}</div>
+      <div>
+        <button data-id="${u.id}" class="selectBtn action-link">Sign</button>
+        <button data-id="${u.id}" class="delBtn action-link">Del</button>
+      </div>`;
+    list.appendChild(div);
+  });
+  list.querySelectorAll('.delBtn').forEach(b=>b.addEventListener('click',e=>{
+    const id=Number(e.target.dataset.id); if(!confirm('Delete user?')) return;
+    const users = readJSON(LS_USERS,[]).filter(x=>x.id!==id); writeJSON(LS_USERS, users); renderUsers();
+  }));
+  list.querySelectorAll('.selectBtn').forEach(b=>b.addEventListener('click',e=>{
+    const id=Number(e.target.dataset.id); const users=readJSON(LS_USERS,[]); const u=users.find(x=>x.id===id);
+    if(u){ writeJSON(LS_CURUSER,u); location.reload(); }
+  }));
+}
+
+/* events CRUD */
+function addEvent(name, type, tag='Other'){
+  const evs = readJSON(LS_EVENTS,[]);
+  const id = Date.now() + Math.floor(Math.random()*1000);
+  evs.push({id, tsISO: new Date().toISOString(), name, type, tag});
+  writeJSON(LS_EVENTS, evs);
+}
+function deleteEvent(id){ const evs = readJSON(LS_EVENTS,[]).filter(e=>e.id!==id); writeJSON(LS_EVENTS, evs); }
+function editEventNote(id, newTag){ const evs=readJSON(LS_EVENTS,[]); const r=evs.find(e=>e.id===id); if(r){ r.tag=newTag; writeJSON(LS_EVENTS, evs); } }
+
+/* pairing events into sessions per day per user
+   For each user+date, sort events by ts asc. Pair entry -> next exit (after it). If exit appears before entry, we still record exit-only as zero-length session (or skip). If unmatched entry, session end = now (ongoing).
+*/
+function sessionsFromEvents(events){
+  // events: array of {id, tsISO, name, type, tag}
+  const byKey = {};
+  events.slice().sort((a,b)=> new Date(a.tsISO) - new Date(b.tsISO)).forEach(e=>{
+    const key = `${e.name}::${dateOnly(new Date(e.tsISO))}`;
+    if(!byKey[key]) byKey[key]=[];
+    byKey[key].push(e);
+  });
+  const sessions = []; // {name,date,startISO,endISO,durationSec,tags:[...],entryId,exitId}
+  for(const key in byKey){
+    const parts = key.split('::'); const name=parts[0]; const date=parts[1];
+    const list = byKey[key];
+    let i=0;
+    while(i<list.length){
+      const ev = list[i];
+      if(ev.type==='entry'){
+        // find next exit
+        let exit = list.slice(i+1).find(x=>x.type==='exit');
+        if(exit){
+          const start = new Date(ev.tsISO), end = new Date(exit.tsISO);
+          const dur = Math.max(0,(end - start)/1000);
+          sessions.push({name,date,startISO:ev.tsISO,endISO:exit.tsISO,durationSec:dur,tags:[ev.tag,exit.tag].filter(Boolean), entryId:ev.id, exitId:exit.id});
+          // remove that exit from consideration by advancing pointer to index of exit+1
+          const exitIndex = list.indexOf(exit);
+          i = exitIndex + 1;
+        } else {
+          // unmatched entry -> ongoing session till now
+          const start = new Date(ev.tsISO), end = new Date();
+          const dur = Math.max(0,(end - start)/1000);
+          sessions.push({name,date,startISO:ev.tsISO,endISO:null,durationSec:dur,tags:[ev.tag], entryId:ev.id, exitId:null});
+          i++;
+        }
+      } else if(ev.type==='exit'){
+        // exit without prior entry: add a short session or a record with null start
+        // We'll treat as zero-length session at exit time (user had left without recorded entry)
+        sessions.push({name,date,startISO:null,endISO:ev.tsISO,durationSec:0,tags:[ev.tag], entryId:null, exitId:ev.id});
+        i++;
+      } else i++;
+    }
+  }
+  return sessions.sort((a,b)=> (a.date > b.date ? -1:1));
+}
+
+/* render UI */
+function renderEvents(filter=''){
+  const evs = readJSON(LS_EVENTS,[]).slice().reverse();
+  const f = filter.trim().toLowerCase();
+  const listWrap = el('eventsList'); listWrap.innerHTML = '';
+  const shown = evs.filter(e=>{
+    if(!f) return true;
+    return [e.name, e.tag, e.tsISO].some(s=>String(s).toLowerCase().includes(f));
+  });
+  shown.forEach(e=>{
+    const d = new Date(e.tsISO);
+    const tr = document.createElement('div'); tr.style.display='flex'; tr.style.justifyContent='space-between'; tr.style.padding='6px'; tr.style.borderBottom='1px solid rgba(255,255,255,0.02)';
+    tr.innerHTML = `<div>
+        <div style="font-weight:700">${e.name} <span class="tag-pill">${e.tag}</span></div>
+        <div class="tiny">${fmtTS(d)} — <span class="${e.type==='entry'?'status-enter':'status-exit'}">${e.type.toUpperCase()}</span></div>
+      </div>
+      <div style="text-align:right">
+        <button data-id="${e.id}" class="editEv action-link">Tag</button>
+        <button data-id="${e.id}" class="delEv action-link">Del</button>
+      </div>`;
+    listWrap.appendChild(tr);
+  });
+  el('recordCount').textContent = `${shown.length} events (total ${evs.length})`;
+  attachEventBtns();
+}
+
+function renderSessions(filter=''){
+  const evs = readJSON(LS_EVENTS,[]);
+  const sessions = sessionsFromEvents(evs);
+  const f = filter.trim().toLowerCase();
+  const wrap = el('sessionsList'); wrap.innerHTML = '';
+  const grouped = {};
+  sessions.forEach(s=>{
+    if(f){
+      if(![s.name, s.date, s.tags.join(' ')].some(x=>String(x).toLowerCase().includes(f))) return;
+    }
+    if(!grouped[s.date]) grouped[s.date]=[];
+    grouped[s.date].push(s);
+  });
+  const dates = Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
+  dates.forEach(date=>{
+    const block = document.createElement('div'); block.className='session-block';
+    block.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-weight:700">${date}</div>
+      <div class="tiny">Sessions: ${grouped[date].length}</div>
+    </div>`;
+    grouped[date].forEach(s=>{
+      const div = document.createElement('div'); div.className='session-row';
+      const startStr = s.startISO ? fmtTS(new Date(s.startISO)) : '—';
+      const endStr = s.endISO ? fmtTS(new Date(s.endISO)) : (s.endISO===null ? 'ongoing' : '—');
+      div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div><strong>${s.name}</strong> <span class="tiny">${s.tags.join(', ')}</span></div>
+          <div class="tiny">${startStr} → ${endStr}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:700">${durToStr(s.durationSec)}</div>
+          <div class="tiny" style="margin-top:6px">
+            <button data-entry="${s.entryId||''}" data-exit="${s.exitId||''}" class="delSession action-link">Del</button>
+          </div>
+        </div>
+      </div>`;
+      block.appendChild(div);
+    });
+    wrap.appendChild(block);
+  });
+
+  // today summary: sum durations for today
+  const today = dateOnly(new Date());
+  const todaySessions = sessions.filter(s=>s.date===today);
+  const totalSec = todaySessions.reduce((sum,s)=>sum + (s.durationSec||0),0);
+  el('todaySummary').textContent = `Today (${today}) total: ${durToStr(totalSec)} — sessions: ${todaySessions.length}`;
+  attachSessionBtns();
+}
+
+/* attach handlers for dynamic buttons */
+function attachEventBtns(){
+  document.querySelectorAll('.delEv').forEach(b=>b.addEventListener('click',e=>{
+    const id=Number(e.target.dataset.id); if(!confirm('Delete event?')) return;
+    deleteEvent(id); renderEvents(el('searchInput').value); renderSessions(el('searchInput').value);
+  }));
+  document.querySelectorAll('.editEv').forEach(b=>b.addEventListener('click',e=>{
+    const id=Number(e.target.dataset.id); const evs=readJSON(LS_EVENTS,[]); const ev=evs.find(x=>x.id===id);
+    if(!ev) return alert('Not found');
+    const newTag = prompt('Edit tag:', ev.tag || '');
+    if(newTag===null) return;
+    ev.tag = newTag.trim() || 'Other'; writeJSON(LS_EVENTS, evs); renderEvents(el('searchInput').value); renderSessions(el('searchInput').value);
+  }));
+}
+
+function attachSessionBtns(){
+  document.querySelectorAll('.delSession').forEach(b=>b.addEventListener('click',e=>{
+    const entryId = e.target.dataset.entry ? Number(e.target.dataset.entry) : null;
+    const exitId = e.target.dataset.exit ? Number(e.target.dataset.exit) : null;
+    if(!confirm('Delete session events (will delete associated entry/exit events)?')) return;
+    let evs = readJSON(LS_EVENTS,[]);
+    evs = evs.filter(x=> x.id !== entryId && x.id !== exitId);
+    writeJSON(LS_EVENTS, evs); renderEvents(el('searchInput').value); renderSessions(el('searchInput').value);
+  }));
+}
+
+/* export functions */
+function exportEventsCSV(filter=''){
+  const evs = readJSON(LS_EVENTS,[]).slice().sort((a,b)=> new Date(a.tsISO)-new Date(b.tsISO));
+  const f = filter.trim().toLowerCase();
+  const rows = evs.filter(e=>{
+    if(!f) return true;
+    return [e.name,e.tag,e.tsISO,e.type].some(x=>String(x).toLowerCase().includes(f));
+  });
+  if(!rows.length) return alert('No events to export');
+  const header = ['Timestamp','Name','Type','Tag'];
+  const lines = [header.join(',')].concat(rows.map(r=>`"${r.tsISO}","${r.name}","${r.type}","${(r.tag||'').replace(/"/g,'""')}"`));
+  downloadCSV(lines.join('\n'),'attendance_events.csv');
+}
+function exportSessionsCSV(filter=''){
+  const evs = readJSON(LS_EVENTS,[]);
+  const sessions = sessionsFromEvents(evs).slice().reverse(); // chronological
+  const f = filter.trim().toLowerCase();
+  const rows = sessions.filter(s=> {
+    if(!f) return true;
+    return [s.name,s.date,s.tags.join(' ')].some(x=>String(x).toLowerCase().includes(f));
+  });
+  if(!rows.length) return alert('No sessions to export');
+  const header = ['Date','Name','Start','End','DurationSec','DurationHuman','Tags'];
+  const lines = [header.join(',')].concat(rows.map(s=>{
+    const start = s.startISO||''; const end = s.endISO||''; const dh = durToStr(s.durationSec||0);
+    return `"${s.date}","${s.name}","${start}","${end}","${Math.round(s.durationSec||0)}","${dh}","${s.tags.join(';')}"`;
+  }));
+  downloadCSV(lines.join('\n'),'attendance_sessions.csv');
+}
+function downloadCSV(text, filename){
+  const blob = new Blob([text], {type:'text/csv'}); const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/* main init */
+document.addEventListener('DOMContentLoaded', ()=>{
+  ensureDefaults(); renderUsers();
+
+  const cur = readJSON(LS_CURUSER, null);
+  if(cur){
+    el('loginCard').hidden=true; el('attendanceCard').hidden=false;
+    el('signedInAs').textContent = cur.name + (cur.role==='admin'?' (admin)':'');
+    el('currentUserInfo').textContent = `Signed in: ${cur.name} (click to sign out)`;
+  } else {
+    el('loginCard').hidden=false; el('attendanceCard').hidden=true;
+  }
+
+  // clock
+  setInterval(()=> el('clock').textContent = new Date().toLocaleTimeString(), 1000);
+
+  // render initial
+  renderEvents(); renderSessions();
+
+  // login handlers
+  el('loginBtn').addEventListener('click', ()=>{
+    const u = el('username').value.trim(); const p = el('password').value;
+    if(!u) return alert('Enter username');
+    const users = readJSON(LS_USERS,[]);
+    const found = users.find(x=>x.name.toLowerCase()===u.toLowerCase() && (x.pass||'')=== (p||''));
+    if(found){ writeJSON(LS_CURUSER, found); location.reload(); } else alert('Invalid credentials');
+  });
+  el('guestBtn').addEventListener('click', ()=>{
+    const name = prompt('Enter your name (quick sign):'); if(!name) return;
+    let users = readJSON(LS_USERS,[]); let usr = users.find(x=>x.name.toLowerCase()===name.toLowerCase());
+    if(!usr){ usr = {id:(users.reduce((s,x)=>Math.max(s,x.id),0)||0)+1, name, pass:'', role:'user'}; users.push(usr); writeJSON(LS_USERS, users); renderUsers(); }
+    writeJSON(LS_CURUSER, usr); location.reload();
+  });
+  el('registerBtn').addEventListener('click', ()=>{
+    const name = el('newUserName').value.trim(); const pass = el('newUserPass').value;
+    if(!name) return alert('Enter name');
+    let users = readJSON(LS_USERS,[]);
+    if(users.some(x=>x.name.toLowerCase()===name.toLowerCase())) return alert('Name exists');
+    users.push({id:(users.reduce((s,x)=>Math.max(s,x.id),0)||0)+1, name, pass:pass||'', role:'user'});
+    writeJSON(LS_USERS, users); el('newUserName').value=''; el('newUserPass').value=''; renderUsers(); alert('User added');
+  });
+
+  el('addUserBtn').addEventListener('click', ()=> el('registerBtn').click());
+
+  el('resetBtn').addEventListener('click', ()=>{ if(confirm('Reset demo data (users,events)?')){ localStorage.removeItem(LS_USERS); localStorage.removeItem(LS_EVENTS); localStorage.removeItem(LS_CURUSER); location.reload(); } });
+
+  // sign out
+  el('currentUserInfo').addEventListener('click', ()=> {
+    if(readJSON(LS_CURUSER,null)){
+      if(confirm('Sign out?')){ localStorage.removeItem(LS_CURUSER); location.reload(); }
+    }
+  });
+
+  // mark entry / exit
+  el('markEntry').addEventListener('click', ()=>{
+    const cur = readJSON(LS_CURUSER, null); if(!cur) return alert('Sign in first');
+    const tag = el('eventTag').value || 'Work';
+    addEvent(cur.name, 'entry', tag); renderEvents(el('searchInput').value); renderSessions(el('searchInput').value);
+  });
+  el('markExit').addEventListener('click', ()=>{
+    const cur = readJSON(LS_CURUSER, null); if(!cur) return alert('Sign in first');
+    const tag = el('eventTag').value || 'Exit';
+    addEvent(cur.name, 'exit', tag); renderEvents(el('searchInput').value); renderSessions(el('searchInput').value);
+  });
+
+  // search / export
+  el('searchInput').addEventListener('input', e=>{ renderEvents(e.target.value); renderSessions(e.target.value); });
+  el('exportEvents').addEventListener('click', ()=> exportEventsCSV(el('searchInput').value));
+  el('exportSessions').addEventListener('click', ()=> exportSessionsCSV(el('searchInput').value));
+
+  // keyboard shortcuts P/E for entry/exit
+  document.addEventListener('keydown', (e)=>{
+    if(!readJSON(LS_CURUSER,null)) return;
+    if(e.key.toLowerCase()==='e') el('markEntry').click();
+    if(e.key.toLowerCase()==='x') el('markExit').click();
+  });
+
+}); // DOMContentLoaded
+</script>
+</body>
+</html>
