@@ -1,24 +1,242 @@
 <!doctype html>
-<html lang="ta">
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Birthday Flip</title>
-<style>
-  body{margin:0;display:flex;justify-content:center;align-items:center;height:100vh;background:#000;font-family:Inter,system-ui;color:#fff}
-  .box{padding:40px;border-radius:20px;background:#111;width:90%;max-width:360px;text-align:center}
-  .flip{font-size:42px;font-weight:700;transform:rotate(180deg);letter-spacing:1px}
-  .sub{margin-top:10px;color:#aaa;font-size:14px}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mini Shopping Site</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#94a3b8;--accent:#06b6d4;--glass: rgba(255,255,255,0.03)}
+    *{box-sizing:border-box}
+    body{font-family:Inter,Segoe UI,Roboto,system-ui,Arial;background:linear-gradient(180deg,#071029 0%, #0b1724 100%);color:#e6eef6;margin:0;padding:24px}
+    .wrap{max-width:1100px;margin:0 auto}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    h1{font-size:20px;margin:0}
+    .search{display:flex;gap:8px}
+    input[type=search]{background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:10px;color:inherit}
+    button{background:var(--accent);border:none;padding:8px 12px;border-radius:10px;color:#012;cursor:pointer}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:12px}
+    .thumb{height:140px;border-radius:10px;background-size:cover;background-position:center}
+    .meta{display:flex;justify-content:space-between;align-items:center}
+    .title{font-weight:600}
+    .price{font-weight:700}
+    .small{color:var(--muted);font-size:13px}
+
+    .actions{display:flex;gap:8px}
+    .add{flex:1;background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px;border-radius:8px;color:inherit;cursor:pointer}
+
+    /* cart */
+    .cart-btn{position:relative}
+    .badge{position:absolute;right:-8px;top:-8px;background:#ef4444;color:white;border-radius:999px;padding:4px 7px;font-size:12px}
+    .cart-panel{position:fixed;right:20px;top:70px;width:360px;max-width:calc(100% - 40px);background:#071428;padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 10px 30px rgba(2,6,23,0.7);display:none;z-index:50}
+    .cart-panel.open{display:block}
+    .cart-item{display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
+    .cart-item img{width:56px;height:56px;border-radius:8px;object-fit:cover}
+    .qty{display:flex;gap:6px;align-items:center}
+    .icon-btn{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px;border-radius:6px;cursor:pointer}
+    .total{display:flex;justify-content:space-between;font-weight:700;padding-top:10px}
+
+    footer{margin-top:24px;color:var(--muted);font-size:13px;text-align:center}
+
+    @media (max-width:640px){header{flex-direction:column;align-items:flex-start;gap:10px}}
+  </style>
 </head>
 <body>
-  <div class="box">
-    <div id="flipName" class="flip">SELVA</div>
-    <div class="sub">பிறந்த நாள் வாழ்த்துக்கள் ♥</div>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Mini Shop</h1>
+        <div class="small">Simple demo shop — add items, control cart, store in localStorage</div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="search">
+          <input id="search" placeholder="Search products..." type="search" />
+          <button id="clearSearch">Clear</button>
+        </div>
+        <button class="cart-btn" id="openCart">Cart 🛒 <span class="badge" id="cartCount">0</span></button>
+      </div>
+    </header>
+
+    <main>
+      <section class="grid" id="products"></section>
+    </main>
+
+    <div class="cart-panel" id="cartPanel">
+      <h3>Your Cart</h3>
+      <div id="cartItems" style="max-height:380px;overflow:auto;margin-top:8px"></div>
+      <div class="total" id="cartTotalRow">
+        <div>Total</div>
+        <div id="cartTotal">₹0.00</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="checkout" style="flex:1">Checkout</button>
+        <button id="clearCart" style="background:transparent">Clear</button>
+      </div>
+    </div>
+
+    <footer>Made with ♥ — demo only. Images from Unsplash placeholders.</footer>
   </div>
-<script>
-  const name = "Selva"; // <-- Only change this
-  document.getElementById("flipName").textContent = name.toUpperCase();
-</script>
+
+  <script>
+    // --- sample product data ---
+    const PRODUCTS = [
+      {id:1, name:'Classic Tee', price:799, img:'https://images.unsplash.com/photo-1520975911270-68a1a1a6a1a6?auto=format&fit=crop&w=800&q=60'},
+      {id:2, name:'Sneaker Run', price:2499, img:'https://images.unsplash.com/photo-1519744792095-2f2205e87b6f?auto=format&fit=crop&w=800&q=60'},
+      {id:3, name:'Denim Jacket', price:3299, img:'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=60'},
+      {id:4, name:'Sunglasses', price:599, img:'https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=800&q=60'},
+      {id:5, name:'Backpack', price:1499, img:'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=800&q=60'},
+      {id:6, name:'Wristwatch', price:3499, img:'https://images.unsplash.com/photo-1518544881628-7b2a2f78f1d8?auto=format&fit=crop&w=800&q=60'}
+    ];
+
+    // --- simple cart logic ---
+    const CART_KEY = 'mini_shop_cart_v1';
+
+    function formatINR(n){return '₹' + Number(n).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})}
+
+    let cart = JSON.parse(localStorage.getItem(CART_KEY) || '{}'); // {productId: qty}
+
+    const productsEl = document.getElementById('products');
+    const cartCountEl = document.getElementById('cartCount');
+    const cartPanel = document.getElementById('cartPanel');
+    const cartItemsEl = document.getElementById('cartItems');
+    const cartTotalEl = document.getElementById('cartTotal');
+
+    function renderProducts(list){
+      productsEl.innerHTML = '';
+      list.forEach(p => {
+        const card = document.createElement('div'); card.className='card';
+        card.innerHTML = `
+          <div class="thumb" style="background-image:url('${p.img}')"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="title">${p.name}</div>
+              <div class="small">ID: ${p.id}</div>
+            </div>
+            <div class="price">${formatINR(p.price)}</div>
+          </div>
+          <div class="actions">
+            <button class="add" data-id="${p.id}">Add to cart</button>
+            <button class="icon-btn" data-id="${p.id}" title="Quick view">👁</button>
+          </div>
+        `;
+        productsEl.appendChild(card);
+      });
+    }
+
+    function saveCart(){
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+      updateCartUI();
+    }
+
+    function addToCart(id, qty=1){
+      cart[id] = (cart[id]||0) + qty;
+      saveCart();
+    }
+
+    function removeFromCart(id){
+      delete cart[id]; saveCart();
+    }
+
+    function setQty(id, qty){
+      if(qty<=0) removeFromCart(id);
+      else cart[id]=qty;
+      saveCart();
+    }
+
+    function updateCartUI(){
+      const keys = Object.keys(cart);
+      const count = keys.reduce((s,k)=>s+cart[k],0);
+      cartCountEl.textContent = count;
+
+      // render items
+      cartItemsEl.innerHTML = '';
+      let total = 0;
+      keys.forEach(k => {
+        const p = PRODUCTS.find(x=>x.id==k);
+        if(!p) return;
+        const qty = cart[k];
+        total += p.price * qty;
+        const div = document.createElement('div'); div.className='cart-item';
+        div.innerHTML = `
+          <img src="${p.img}" alt="${p.name}" />
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between"><div>${p.name}</div><div class="small">${formatINR(p.price)}</div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+              <div class="qty">
+                <button class="icon-btn dec" data-id="${p.id}">-</button>
+                <div style="min-width:28px;text-align:center">${qty}</div>
+                <button class="icon-btn inc" data-id="${p.id}">+</button>
+              </div>
+              <button class="icon-btn" data-id="${p.id}" style="font-size:12px">Remove</button>
+            </div>
+          </div>
+        `;
+        cartItemsEl.appendChild(div);
+      });
+      cartTotalEl.textContent = formatINR(total);
+
+      // attach listeners for inc/dec/remove
+      cartItemsEl.querySelectorAll('.inc').forEach(btn=>btn.addEventListener('click', ()=>{
+        const id = btn.dataset.id; setQty(id, (cart[id]||0)+1);
+      }));
+      cartItemsEl.querySelectorAll('.dec').forEach(btn=>btn.addEventListener('click', ()=>{
+        const id = btn.dataset.id; setQty(id, (cart[id]||0)-1);
+      }));
+      cartItemsEl.querySelectorAll('button[data-id]:not(.inc):not(.dec)').forEach(btn=>{
+        if(btn.textContent.trim()==='Remove') btn.addEventListener('click', ()=>{ removeFromCart(btn.dataset.id); });
+      });
+    }
+
+    // --- initial render ---
+    renderProducts(PRODUCTS);
+    updateCartUI();
+
+    // --- events ---
+    document.addEventListener('click', e=>{
+      const addBtn = e.target.closest('.add');
+      if(addBtn){ addToCart(addBtn.dataset.id); return; }
+    });
+
+    document.getElementById('openCart').addEventListener('click', ()=>{
+      cartPanel.classList.toggle('open');
+    });
+
+    document.getElementById('clearCart').addEventListener('click', ()=>{
+      cart = {}; saveCart();
+    });
+
+    document.getElementById('checkout').addEventListener('click', ()=>{
+      if(Object.keys(cart).length===0){alert('Your cart is empty.'); return}
+      alert('Checkout — this is a demo.\nThank you for testing!');
+      cart = {}; saveCart(); cartPanel.classList.remove('open');
+    });
+
+    // search
+    const searchEl = document.getElementById('search');
+    const clearSearch = document.getElementById('clearSearch');
+    searchEl.addEventListener('input', ()=>{
+      const q = searchEl.value.trim().toLowerCase();
+      if(!q) renderProducts(PRODUCTS);
+      else renderProducts(PRODUCTS.filter(p=>p.name.toLowerCase().includes(q) || String(p.id)===q));
+    });
+    clearSearch.addEventListener('click', ()=>{searchEl.value=''; renderProducts(PRODUCTS)});
+
+    // close cart if clicking outside
+    document.addEventListener('click', (e)=>{
+      if(!e.target.closest('.cart-panel') && !e.target.closest('.cart-btn')){
+        cartPanel.classList.remove('open');
+      }
+    });
+
+    // helpful: hotkeys
+    document.addEventListener('keydown', (e)=>{
+      if(e.key==='c') cartPanel.classList.toggle('open');
+      if(e.key==='l' && (e.ctrlKey||e.metaKey)){ // ctrl/cmd+L to clear storage
+        if(confirm('Clear local storage (cart)?')){ localStorage.removeItem(CART_KEY); cart={}; updateCartUI(); }
+      }
+    });
+  </script>
 </body>
 </html>
