@@ -3,227 +3,55 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Happy Birthday 🎉</title>
+  <title>Birthday Wish</title>
   <style>
-    :root{--bg:#0f172a;--card:#0b1220;--accent:#f59e0b;--muted:#94a3b8}
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
-    body{background:linear-gradient(180deg,#071029 0%, #071b2a 60%);color:#e6eef8;display:flex;align-items:center;justify-content:center;padding:28px}
-
-    .wrap{width:100%;max-width:980px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:18px;padding:22px;box-shadow:0 10px 40px rgba(2,6,23,0.6);position:relative;overflow:hidden}
-
-    header{display:flex;gap:18px;align-items:center}
-    .logo{width:72px;height:72px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#ef4444);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;color:#071029}
-    h1{margin:0;font-size:22px}
-    p.lead{margin:4px 0 0;color:var(--muted);font-size:13px}
-
-    .row{display:flex;gap:18px;margin-top:18px}
-    .col{flex:1}
-
-    .card{background:rgba(255,255,255,0.02);padding:16px;border-radius:12px}
-
-    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    input[type=text], textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);color:inherit;font-size:14px}
-    textarea{min-height:100px;resize:vertical}
-
-    .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    button{border:0;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#ef4444);color:#071029;font-weight:600;cursor:pointer}
-    button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-
-    .preview{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:18px;border-radius:12px;background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));min-height:250px}
-    .cake{font-size:46px}
-    .wish{font-size:20px;text-align:center;padding:6px 12px}
-
-    .confetti-canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
-
-    footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px;color:var(--muted);font-size:13px}
-
-    /* Floating balloons */
-    .balloon{position:absolute;width:56px;height:80px;border-radius:50% 50% 45% 45%;transform-origin:center bottom;opacity:0.95}
-    .balloon::after{content:'';position:absolute;left:50%;top:75%;width:2px;height:18px;background:rgba(255,255,255,0.15);transform:translateX(-50%)}
-    @keyframes floaty{0%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-20px) rotate(3deg)}100%{transform:translateY(0) rotate(-3deg)}}
-
-    /* Responsive */
-    @media (max-width:760px){.row{flex-direction:column}.logo{width:56px;height:56px}.cake{font-size:36px}}
+    body{margin:0;background:#0d0d0f;color:#fff;font-family:Inter,system-ui;display:flex;justify-content:center;padding:40px}
+    .card{max-width:420px;width:100%;background:#111;border-radius:20px;padding:28px;box-shadow:0 0 40px rgba(0,0,0,0.5)}
+    h1{font-size:26px;margin:0 0 10px;font-weight:600}
+    .label{color:#999;font-size:14px;margin-top:16px}
+    input,textarea{width:100%;padding:12px;margin-top:6px;border-radius:12px;border:0;background:#1a1a1d;color:#fff;font-size:15px}
+    textarea{min-height:90px;resize:none}
+    button{margin-top:20px;width:100%;padding:14px;border:0;border-radius:12px;background:#fff;color:#000;font-size:16px;font-weight:600;cursor:pointer}
+    .preview{margin-top:26px;padding:22px;background:#1a1a1d;border-radius:16px;text-align:center}
+    .cake{font-size:50px;margin-bottom:10px}
   </style>
 </head>
 <body>
-  <div class="wrap" id="app">
-    <canvas class="confetti-canvas" id="confetti"></canvas>
+  <div class="card">
+    <h1>Birthday Wish</h1>
 
-    <header>
-      <div class="logo">HB</div>
-      <div>
-        <h1>Super Birthday Wishes Maker</h1>
-        <p class="lead">ஒரு நபருக்கு தனிப்பயன் வாழ்த்தை உருவாக்கி பகிருங்கள் — fun, fast, and flashy.</p>
-      </div>
-    </header>
+    <div class="label">பெயர்</div>
+    <input id="name" value="Selva" />
 
-    <div class="row">
-      <div class="col">
-        <div class="card">
-          <label>பெயர் (Recipient name)</label>
-          <input id="name" type="text" placeholder="உங்கள் நண்பரின் பெயர் எழுது..." value="அன்பு நண்பருக்கு" />
+    <div class="label">Short Wish</div>
+    <input id="short" value="பிறந்த நாள் வாழ்த்துக்கள்!" />
 
-          <label style="margin-top:10px">குறிச்சொல் / வாழ்த்து (Short wish)</label>
-          <input id="shortWish" type="text" placeholder="உதாரணம்: 'பிறந்த நாள் வாழ்த்துகள்!'" value="பிறந்த நாள் வாழ்த்துக்கள்!" />
+    <div class="label">Long Wish</div>
+    <textarea id="long">இன்று உன் நாள். சந்தோஷமும் வெற்றியும் நிரம்பிய ஒரு புதிய வருடம் உனக்கு அமையட்டும்!</textarea>
 
-          <label style="margin-top:10px">நீண்ட வாழ்த்து (Optional)</label>
-          <textarea id="longWish">இன்று உன் நாள் — சந்தோஷமும், வெற்றிகளும் நன்னாள்கள் ஏற்பதாய். மீண்டும் ஒரு சூப்பர் வருடம் நல்வாழ்த்துக்கள்!</textarea>
+    <button id="update">Update Preview</button>
 
-          <div class="controls">
-            <button id="showBtn">விழிக்கவிட்டு காண் (Show)</button>
-            <button class="secondary" id="confettiBtn">Confetti start/stop</button>
-            <button class="secondary" id="shareBtn">Share (open as new tab)</button>
-            <button class="secondary" id="downloadBtn">Download .html</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="card preview" id="preview">
-          <div class="cake" aria-hidden>🎂</div>
-          <div class="wish" id="previewShort">பிறந்த நாள் வாழ்த்துக்கள்!</div>
-          <div id="previewName" style="font-weight:700;font-size:18px">அன்பு நண்பருக்கு</div>
-          <div id="previewLong" style="color:var(--muted);max-width:70%;text-align:center">இன்று உன் நாள் — சந்தோஷமும், வெற்றிகளும் நன்னாள்கள் ஏற்பதாய். மீண்டும் ஒரு சூப்பர் வருடம் நல்வாழ்த்துக்கள்!</div>
-        </div>
-      </div>
+    <div class="preview">
+      <div class="cake">🎂</div>
+      <div id="p_short">பிறந்த நாள் வாழ்த்துக்கள்!</div>
+      <div id="p_name" style="font-weight:600;margin-top:6px">Selva</div>
+      <div id="p_long" style="color:#aaa;margin-top:10px">இன்று உன் நாள்...</div>
     </div>
-
-    <footer>
-      <div>Made with ❤️ — share the joy</div>
-      <div style="display:flex;gap:10px;align-items:center">
-        <small class="muted">Tip:</small>
-        <small class="muted">Use "Share" to open a standalone page you can send.</small>
-      </div>
-    </footer>
-
-    <!-- decorative balloons -->
-    <div class="balloon" style="left:4%;top:30%;background:linear-gradient(180deg,#ff7a7a,#ffb6c1);animation:floaty 6s ease-in-out infinite"></div>
-    <div class="balloon" style="left:18%;top:10%;background:linear-gradient(180deg,#ffd36b,#ff8a00);width:46px;height:68px;animation:floaty 5.4s ease-in-out infinite"></div>
-    <div class="balloon" style="right:8%;top:20%;background:linear-gradient(180deg,#8be7ff,#3bb4ff);transform:scale(0.95);animation:floaty 6.6s ease-in-out infinite"></div>
   </div>
 
-  <script>
-    // DOM
-    const nameInput = document.getElementById('name');
-    const shortInput = document.getElementById('shortWish');
-    const longInput = document.getElementById('longWish');
-    const showBtn = document.getElementById('showBtn');
-    const confettiBtn = document.getElementById('confettiBtn');
-    const shareBtn = document.getElementById('shareBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
+<script>
+const n=document.getElementById('name');
+const s=document.getElementById('short');
+const l=document.getElementById('long');
+const ps=document.getElementById('p_short');
+const pn=document.getElementById('p_name');
+const pl=document.getElementById('p_long');
 
-    const previewShort = document.getElementById('previewShort');
-    const previewName = document.getElementById('previewName');
-    const previewLong = document.getElementById('previewLong');
-
-    // show preview
-    function updatePreview(){
-      previewShort.textContent = shortInput.value || 'பிறந்த நாள் வாழ்த்துக்கள்!';
-      previewName.textContent = nameInput.value || 'அன்பு நண்பருக்கு';
-      previewLong.textContent = longInput.value || '';
-    }
-
-    showBtn.addEventListener('click', ()=>{
-      updatePreview();
-      startConfetti(160);
-      playToneSequence();
-    });
-
-    // Simple confetti canvas
-    const canvas = document.getElementById('confetti');
-    const ctx = canvas.getContext('2d');
-    let W=0,H=0; function resize(){W=canvas.width=canvas.clientWidth;H=canvas.height=canvas.clientHeight}
-    window.addEventListener('resize', resize); resize();
-
-    let particles=[],running=false;
-    function rand(min,max){return Math.random()*(max-min)+min}
-
-    function startConfetti(count=120){
-      particles = [];
-      for(let i=0;i<count;i++){
-        particles.push({x:rand(0,W),y:rand(-H,0),vx:rand(-1.5,1.5),vy:rand(1,4),size:rand(6,12),angle:rand(0,360),spin:rand(-0.2,0.4),color:randomColor()});
-      }
-      if(!running){running=true;requestAnimationFrame(loop)}
-    }
-    function stopConfetti(){running=false}
-
-    function loop(){
-      ctx.clearRect(0,0,W,H);
-      for(let p of particles){
-        p.x+=p.vx; p.y+=p.vy; p.vy+=0.02; p.angle+=p.spin;
-        if(p.y>H+20){p.y=rand(-100, -10); p.x=rand(0,W); p.vy=rand(1,3)}
-        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.angle);
-        ctx.fillStyle=p.color; ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6);
-        ctx.restore();
-      }
-      if(running) requestAnimationFrame(loop);
-    }
-
-    function randomColor(){
-      const palette=['#ff5c8a','#ffd36b','#8be7ff','#7af29a','#ff8a00','#c084fc'];
-      return palette[Math.floor(Math.random()*palette.length)];
-    }
-
-    confettiBtn.addEventListener('click', ()=>{
-      running? stopConfetti() : startConfetti(140);
-      confettiBtn.textContent = running? 'Confetti stop' : 'Confetti start';
-    });
-
-    // small melody using WebAudio API
-    function playToneSequence(){
-      try{
-        const ctx = new (window.AudioContext||window.webkitAudioContext)();
-        const now = ctx.currentTime; const notes=[523.25,659.25,783.99,1046.5];
-        notes.forEach((f,i)=>{
-          const o=ctx.createOscillator(); const g=ctx.createGain();
-          o.type='sine'; o.frequency.value=f; g.gain.value=0.02;
-          o.connect(g); g.connect(ctx.destination);
-          o.start(now + i*0.13); o.stop(now + i*0.13 + 0.12);
-        });
-      }catch(e){console.warn('audio blocked',e)}
-    }
-
-    // Share: create a data URL with a small standalone HTML prefilled with user's text
-    shareBtn.addEventListener('click', ()=>{
-      updatePreview();
-      const name = escapeHtml(nameInput.value||'Friend');
-      const short = escapeHtml(shortInput.value||'Happy Birthday!');
-      const long = escapeHtml(longInput.value||'Wishing you all the best.');
-
-      const page = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${name} — Happy Birthday</title>
-      <style>body{font-family:system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#071029,#071b2a);color:#e6eef8;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
-      .card{padding:30px;border-radius:12px;background:rgba(255,255,255,0.03);text-align:center;max-width:680px}
-      .cake{font-size:60px}</style></head><body>
-      <div class="card"><div class="cake">🎉🎂</div><h1>${short}</h1><h2>${name}</h2><p style="color:#9fb0c6">${long}</p></div>
-      <script>window.onload=function(){document.body.addEventListener('click',()=>{window.close&&window.close()})}</script></body></html>`;
-
-      const blob = new Blob([page],{type:'text/html'});
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-    });
-
-    // Download as file
-    downloadBtn.addEventListener('click', ()=>{
-      updatePreview();
-      const content = document.documentElement.outerHTML;
-      const blob = new Blob([content],{type:'text/html'});
-      const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
-      a.download = (nameInput.value||'birthday') + '.html'; document.body.appendChild(a); a.click(); a.remove();
-    });
-
-    // escape helper
-    function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-
-    // live update when typing
-    [nameInput,shortInput,longInput].forEach(el=>el.addEventListener('input', updatePreview));
-
-    // initialize
-    updatePreview();
-
-    // make canvas cover the container size after fonts rendered
-    setTimeout(()=>{resize();},350);
-  </script>
+document.getElementById('update').onclick=()=>{
+  ps.textContent=s.value;
+  pn.textContent=n.value;
+  pl.textContent=l.value;
+};
+</script>
 </body>
 </html>
