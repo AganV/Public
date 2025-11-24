@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+        <img src="logo.png" alt="Google Logo">
+        <input type="text">
+        <div>
+            <button>Google Search</button>
+            <button>I'am Felling Lucky</button>
+            <button id="surprise">Surprise 🎉</button>
+
+
+        </div>
+        <p>Google offered in: 
+            <a href="">தமிழ்</a>
+            <a href="">ਪੰਜਾਬੀ</a>
+            <a href="">മലയാളം</a>
+            <a href="">हिन्दी</a>
+            <a href="">বাংলা</a>
+            <a href="">తెలుగు</a>
+            <a href="">मराठी</a>
+            <a href="">ગુજરાતી</a>
+        </p>  
+        <div class="confetti" id="confetti"></div> 
+
+
+<script>
+  const confettiRoot = document.getElementById('confetti');
+
+  function playConfetti(count = 70){
+    const colors = ['#ff5ca8','#7be3ff','#ffd166','#b6ffb3','#c9b3ff'];
+    for(let i=0;i<count;i++){
+      const el = document.createElement('div');
+      el.className = 'piece';
+      const w = 6 + Math.random()*14;
+      el.style.width = w + 'px';
+      el.style.height = (w*1.2) + 'px';
+      el.style.left = (Math.random()*100) + 'vw';
+      el.style.top = (-20 - Math.random()*10) + 'vh';
+      el.style.background = colors[Math.floor(Math.random()*colors.length)];
+      el.style.opacity = 0.95;
+      el.style.transform = 'rotate(' + (Math.random()*360) + 'deg)';
+      const dur = 1500 + Math.random()*2000;
+      el.style.animation = `fall ${dur}ms ease-in forwards`;
+      confettiRoot.appendChild(el);
+      setTimeout(()=>el.remove(), dur+100);
+    }
+  }
+
+  document.getElementById('surprise').addEventListener('click', ()=>{
+    playConfetti();
+  });
+
+window.addEventListener('keydown', e => { if(e.key.toLowerCase()==='s') document.getElementById('surprise').click(); });
+</script>
+</body>
+</html>
