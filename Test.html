@@ -1,83 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="ta">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google</title>
-    <style>
-        img {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            margin-top: 250px;
-        }
-        
-        input{
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            margin-top: 50px;
-            margin-bottom: 10px;
-            padding: 7px 200px 7px 200px;
-        
-        }
-        
-        div {
-            text-align: center;
-        }
-        
-        button{
-            margin-left: 5px;
-            padding: 10px;
-            background-color: rgb(255, 255, 255);
-            border: 0px ;
-        }
-        p{
-            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-            font-weight: 2005;
-            text-align: center;
-        }
-        body{
-                 background:linear-gradient(360deg,#000000,#000000);
-          font-family:system-ui;color:#eaf6ff;
-        }
-               .confetti{
-          pointer-events:none;position:fixed;left:0;top:0;
-          width:100%;height:100%;z-index:999;
-        }
-        .piece{
-          position:absolute;width:10px;height:14px;border-radius:2px;
-          opacity:0;transform-origin:center;
-        }
-        @keyframes fall{
-          0%{transform:translateY(-10vh) rotate(0deg);opacity:1}
-          100%{transform:translateY(120vh) rotate(720deg);opacity:0}
-        }
-    </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Surprise</title>
+
+<style>
+  body{
+    margin:0;min-height:100vh;display:flex;
+    align-items:center;justify-content:center;
+    background:linear-gradient(180deg,#071033,#0f172a);
+    font-family:system-ui;color:#eaf6ff;
+  }
+  button{
+    appearance:none;border:0;padding:14px 24px;
+    border-radius:12px;cursor:pointer;font-weight:700;
+    font-size:18px;background:linear-gradient(90deg,#ff5ca8,#7be3ff);
+    color:#041328;
+  }
+  .confetti{
+    pointer-events:none;position:fixed;left:0;top:0;
+    width:100%;height:100%;z-index:999;
+  }
+  .piece{
+    position:absolute;width:10px;height:14px;border-radius:2px;
+    opacity:0;transform-origin:center;
+  }
+  @keyframes fall{
+    0%{transform:translateY(-10vh) rotate(0deg);opacity:1}
+    100%{transform:translateY(120vh) rotate(720deg);opacity:0}
+  }
+</style>
+
 </head>
 <body>
 
-        <img src="logo.png" alt="Google Logo">
-        <input type="text">
-        <div>
-            <button>Google Search</button>
-            <button>I'am Felling Lucky</button>
-            <button id="surprise">Surprise 🎉</button>
-
-
-        </div>
-        <p>Google offered in: 
-            <a href="">தமிழ்</a>
-            <a href="">ਪੰਜਾਬੀ</a>
-            <a href="">മലയാളം</a>
-            <a href="">हिन्दी</a>
-            <a href="">বাংলা</a>
-            <a href="">తెలుగు</a>
-            <a href="">मराठी</a>
-            <a href="">ગુજરાતી</a>
-        </p>  
-        <div class="confetti" id="confetti"></div> 
-
+<button id="surprise">Surprise 🎉</button>
+<div class="confetti" id="confetti"></div>
 
 <script>
   const confettiRoot = document.getElementById('confetti');
@@ -105,8 +64,7 @@
   document.getElementById('surprise').addEventListener('click', ()=>{
     playConfetti();
   });
-
-window.addEventListener('keydown', e => { if(e.key.toLowerCase()==='s') document.getElementById('surprise').click(); });
 </script>
+
 </body>
 </html>
